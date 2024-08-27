@@ -54,7 +54,7 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
                         std::optional<T> upperBound) {
   // check matrix dimension
   if (rows == 0 or columns == 0) {
-    throw "The matrix dimension must be larger than 0.";
+    throw std::logic_error("The matrix dimension must be larger than 0.");
   }
 
   MATRIX<T> m = MATRIX<T>(rows, std::vector<T>(columns));
@@ -75,7 +75,7 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
       break;
     case MatrixType::Identity:
       if (rows != columns) {
-        throw "An identity matrix must be square.";
+        throw std::logic_error("An identity matrix must be square.");
       }
       for (size_t i = 0; i < rows; i++) {
         for (size_t j = 0; j < columns; j++) {
@@ -88,10 +88,10 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
       break;
     case MatrixType::Random:
       if (!(lowerBound.has_value() && upperBound.has_value())) {
-        throw "The value bound must be set.";
+        throw std::logic_error("The value bound must be set.");
       }
       if (!(*lowerBound < *upperBound)) {
-        throw "The lower bound must be smaller than the upper one.";
+        throw std::logic_error("The lower bound must be smaller than the upper one.");
       }
       std::random_device rd;
       std::mt19937 engine(rd());
@@ -102,7 +102,7 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
         std::uniform_real_distribution<T> dist(*lowerBound, *upperBound);
         gen_random_matrix(m, engine, dist);
       } else {
-        throw "The template type must be integer or floating point number.";
+        throw std::logic_error("The template type must be integer or floating point number.");
       }
       break;
   }
