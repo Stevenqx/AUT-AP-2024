@@ -4,6 +4,8 @@
 #include <optional>
 #include <random>
 #include <vector>
+#include <iostream>
+#include <format>
 
 namespace algebra {
 // Matrix data structure
@@ -28,6 +30,10 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
 // Function template for matrix display
 template <typename T>
 void display(const MATRIX<T>& matrix);
+
+////////////////////////////
+////// Implementation //////
+////////////////////////////
 
 // generate random value in matrix
 template <typename T, typename dist_type>
@@ -101,6 +107,25 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
       break;
   }
   return m;
+}
+
+// Function template for matrix display
+template <typename T>
+void display(const MATRIX<T>& matrix) {
+  for (const auto& row : matrix) {
+    for (const double elem: row) {
+      const int max_width = 7;
+      int num_width = max_width;
+      if (elem < 0) num_width -= 1; // negative sign
+      std::string str = std::format("{:^{}.{}}", elem, max_width, num_width);
+      if (str.length() > max_width) {
+        num_width -= 5; // scientific format
+        str = std::format("{:^{}.{}}", elem, max_width, num_width);
+      }
+      std::cout << "|" << str;
+    }
+    std::cout << "|\n";
+  }
 }
 
 }  // namespace algebra
