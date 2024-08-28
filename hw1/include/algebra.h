@@ -35,7 +35,7 @@ void display(const MATRIX<T>& matrix);
 template <typename T>
 std::pair<size_t, size_t> matrix_size(const MATRIX<T>& matrix);
 
-// Function template for matrix sum or sub
+// Matrix sum or sub
 template <typename T>
 MATRIX<T> sum_sub(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB,
                   std::optional<std::string> operation = "sum");
