@@ -1,11 +1,11 @@
 #ifndef AUT_AP_2024_Spring_HW1
 #define AUT_AP_2024_Spring_HW1
 
+#include <format>
+#include <iostream>
 #include <optional>
 #include <random>
 #include <vector>
-#include <iostream>
-#include <format>
 
 namespace algebra {
 // Matrix data structure
@@ -31,11 +31,19 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
 template <typename T>
 void display(const MATRIX<T>& matrix);
 
+// Helper function for getting matrix size.
+template <typename T>
+std::pair<size_t, size_t> matrix_size(const MATRIX<T>& matrix);
+
+// Function template for matrix sum or sub
+template <typename T>
+MATRIX<T> sum_sub(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB,
+                  std::optional<std::string> operation = "sum");
+
 ////////////////////////////
 ////// Implementation //////
 ////////////////////////////
 
-// generate random value in matrix
 template <typename T, typename dist_type>
 static void gen_random_matrix(MATRIX<T>& matrix, std::mt19937& engine,
                               dist_type& dist) {
@@ -46,7 +54,6 @@ static void gen_random_matrix(MATRIX<T>& matrix, std::mt19937& engine,
   }
 }
 
-// Function template for matrix initialization
 template <typename T>
 MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
                         std::optional<MatrixType> type,
@@ -91,7 +98,8 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
         throw std::logic_error("The value bound must be set.");
       }
       if (!(*lowerBound < *upperBound)) {
-        throw std::logic_error("The lower bound must be smaller than the upper one.");
+        throw std::logic_error(
+            "The lower bound must be smaller than the upper one.");
       }
       std::random_device rd;
       std::mt19937 engine(rd());
@@ -102,30 +110,63 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
         std::uniform_real_distribution<T> dist(*lowerBound, *upperBound);
         gen_random_matrix(m, engine, dist);
       } else {
-        throw std::logic_error("The template type must be integer or floating point number.");
+        throw std::logic_error(
+            "The template type must be integer or floating point number.");
       }
       break;
   }
   return m;
 }
 
-// Function template for matrix display
 template <typename T>
 void display(const MATRIX<T>& matrix) {
   for (const auto& row : matrix) {
-    for (const double elem: row) {
+    for (const double elem : row) {
       const int max_width = 7;
       int num_width = max_width;
-      if (elem < 0) num_width -= 1; // negative sign
+      if (elem < 0) num_width -= 1;  // negative sign
       std::string str = std::format("{:^{}.{}}", elem, max_width, num_width);
       if (str.length() > max_width) {
-        num_width -= 5; // scientific format
+        num_width -= 5;  // scientific format
         str = std::format("{:^{}.{}}", elem, max_width, num_width);
       }
       std::cout << "|" << str;
     }
     std::cout << "|\n";
   }
+}
+
+template <typename T>
+std::pair<size_t, size_t> matrix_size(const MATRIX<T>& matrix) {
+  size_t rows = matrix.size();
+  size_t columns = (rows == 0) ? 0 : (matrix[0]).size();
+  return std::make_pair(rows, columns);
+}
+
+template <typename T>
+MATRIX<T> sum_sub(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB,
+                  std::optional<std::string> operation) {
+  auto sizeA = matrix_size(matrixA);
+  auto sizeB = matrix_size(matrixB);
+  if (sizeA != sizeB) {
+    throw std::logic_error("Matrix dimensions are not same.");
+  }
+  if (!operation.has_value() or
+      !(operation.value() == "sum" or operation.value() == "sub")) {
+    operation = "sum";
+  }
+
+  MATRIX<T> res = matrixA;
+  size_t rowsA = sizeA.first;
+  size_t columnsA = sizeA.second;
+  if (operation.value() == "sum") {
+    for (size_t i = 0; i < rowsA; i++)
+      for (size_t j = 0; j < columnsA; j++) res[i][j] += matrixB[i][j];
+  } else {
+    for (size_t i = 0; i < rowsA; i++)
+      for (size_t j = 0; j < columnsA; j++) res[i][j] -= matrixB[i][j];
+  }
+  return res;
 }
 
 }  // namespace algebra
