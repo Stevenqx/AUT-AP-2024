@@ -51,8 +51,11 @@ MATRIX<T> multiply(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB);
 template <typename T>
 MATRIX<T> hadamard_product(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB);
 
-template<typename T>
+template <typename T>
 MATRIX<T> transpose(const MATRIX<T>& matrix);
+
+template <typename T>
+T trace(const MATRIX<T>& matrix);
 
 ////////////////////////////
 ////// Implementation //////
@@ -231,12 +234,25 @@ MATRIX<T> hadamard_product(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB) {
   return res;
 }
 
-template<typename T>
+template <typename T>
 MATRIX<T> transpose(const MATRIX<T>& matrix) {
   const auto size_m = matrix_size(matrix);
-  MATRIX<T> res = create_matrix<T>(size_m.second, size_m.first, MatrixType::Zeros);
+  MATRIX<T> res =
+      create_matrix<T>(size_m.second, size_m.first, MatrixType::Zeros);
   for (size_t i = 0; i < size_m.first; i++)
     for (size_t j = 0; j < size_m.second; j++) res[j][i] = matrix[i][j];
+  return res;
+}
+
+template <typename T>
+T trace(const MATRIX<T>& matrix) {
+  const auto size_m = matrix_size(matrix);
+  if (size_m.first == 0) throw std::logic_error("Matrix is empty.");
+  if (size_m.first != size_m.second)
+    throw std::logic_error("Matrix must be square.");
+
+  T res = 0;
+  for (size_t i = 0; i < size_m.first; i++) res += matrix[i][i];
   return res;
 }
 
