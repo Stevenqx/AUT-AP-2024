@@ -40,6 +40,14 @@ template <typename T>
 MATRIX<T> sum_sub(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB,
                   std::optional<std::string> operation = "sum");
 
+// Matrix scalar multiplication
+template <typename T>
+MATRIX<T> multiply(const MATRIX<T>& matrix, const T scalar);
+
+// Matrix multiplication
+template <typename T>
+MATRIX<T> multiply(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB);
+
 ////////////////////////////
 ////// Implementation //////
 ////////////////////////////
@@ -61,6 +69,10 @@ MATRIX<T> create_matrix(std::size_t rows, std::size_t columns,
                         std::optional<T> upperBound) {
   // check matrix dimension
   if (rows == 0 or columns == 0) {
+    if (rows == columns) {
+      MATRIX<T> m;
+      return m;
+    }
     throw std::logic_error("The matrix dimension must be larger than 0.");
   }
 
@@ -165,6 +177,37 @@ MATRIX<T> sum_sub(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB,
   } else {
     for (size_t i = 0; i < rowsA; i++)
       for (size_t j = 0; j < columnsA; j++) res[i][j] -= matrixB[i][j];
+  }
+  return res;
+}
+
+template <typename T>
+MATRIX<T> multiply(const MATRIX<T>& matrix, const T scalar) {
+  MATRIX<T> res = matrix;
+  for (auto& row : res)
+    for (auto& elem : row) elem *= scalar;
+  return res;
+}
+
+template <typename T>
+MATRIX<T> multiply(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB) {
+  const auto sizeA = matrix_size(matrixA);
+  const auto sizeB = matrix_size(matrixB);
+  if (sizeA.first == 0 or sizeB.first == 0) {
+    throw std::logic_error("Matrix is empty.");
+  }
+  if (sizeA.second != sizeB.first) {
+    throw std::logic_error("Matrix dimensions do not match.");
+  }
+
+  MATRIX<T> res = create_matrix<T>(sizeA.first, sizeB.second, MatrixType::Zeros);
+  for (size_t i = 0; i < sizeA.first; i++) {
+    for (size_t k = 0; k < sizeA.second; k++) {
+      T tmp = matrixA[i][k];
+      for (size_t j = 0; j < sizeB.second; j++) {
+        res[i][j] += (tmp * matrixB[k][j]);
+      }
+    }
   }
   return res;
 }
