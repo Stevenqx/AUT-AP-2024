@@ -51,6 +51,9 @@ MATRIX<T> multiply(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB);
 template <typename T>
 MATRIX<T> hadamard_product(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB);
 
+template<typename T>
+MATRIX<T> transpose(const MATRIX<T>& matrix);
+
 ////////////////////////////
 ////// Implementation //////
 ////////////////////////////
@@ -225,6 +228,15 @@ MATRIX<T> hadamard_product(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB) {
   MATRIX<T> res = matrixA;
   for (size_t i = 0; i < sizeA.first; i++)
     for (size_t j = 0; j < sizeA.second; j++) res[i][j] *= matrixB[i][j];
+  return res;
+}
+
+template<typename T>
+MATRIX<T> transpose(const MATRIX<T>& matrix) {
+  const auto size_m = matrix_size(matrix);
+  MATRIX<T> res = create_matrix<T>(size_m.second, size_m.first, MatrixType::Zeros);
+  for (size_t i = 0; i < size_m.first; i++)
+    for (size_t j = 0; j < size_m.second; j++) res[j][i] = matrix[i][j];
   return res;
 }
 
