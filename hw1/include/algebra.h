@@ -48,6 +48,9 @@ MATRIX<T> multiply(const MATRIX<T>& matrix, const T scalar);
 template <typename T>
 MATRIX<T> multiply(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB);
 
+template <typename T>
+MATRIX<T> hadamard_product(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB);
+
 ////////////////////////////
 ////// Implementation //////
 ////////////////////////////
@@ -200,7 +203,8 @@ MATRIX<T> multiply(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB) {
     throw std::logic_error("Matrix dimensions do not match.");
   }
 
-  MATRIX<T> res = create_matrix<T>(sizeA.first, sizeB.second, MatrixType::Zeros);
+  MATRIX<T> res =
+      create_matrix<T>(sizeA.first, sizeB.second, MatrixType::Zeros);
   for (size_t i = 0; i < sizeA.first; i++) {
     for (size_t k = 0; k < sizeA.second; k++) {
       T tmp = matrixA[i][k];
@@ -209,6 +213,18 @@ MATRIX<T> multiply(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB) {
       }
     }
   }
+  return res;
+}
+
+template <typename T>
+MATRIX<T> hadamard_product(const MATRIX<T>& matrixA, const MATRIX<T>& matrixB) {
+  const auto sizeA = matrix_size(matrixA);
+  const auto sizeB = matrix_size(matrixB);
+  if (sizeA != sizeB) throw std::logic_error("Matrix dimensions do not match.");
+
+  MATRIX<T> res = matrixA;
+  for (size_t i = 0; i < sizeA.first; i++)
+    for (size_t j = 0; j < sizeA.second; j++) res[i][j] *= matrixB[i][j];
   return res;
 }
 
