@@ -39,7 +39,7 @@ class Account {
 
  private:
   // Member variables
-  Person* owner;
+  const Person* owner;
   const Bank* bank;
   const std::string account_number;
   double balance;
@@ -49,6 +49,12 @@ class Account {
   const std::string CVV2;
   std::string password;
   std::string exp_date;
+
+  // account number generator
+  static int account_number_generator;
+  
+  // throw an exception if the authentication fails
+  void authenticate(const std::string & owner_fingerprint) const;
 };
 
 #endif  // ACCOUNT_H
