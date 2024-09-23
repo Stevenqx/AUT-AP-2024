@@ -80,6 +80,12 @@ class Bank {
   std::map<Person*, double> customer_2_unpaid_loan;
   double bank_total_balance;  // Total bank profit
   double bank_total_loan;     // Total loans issued
+
+  // authenticate owner
+  bool authenticate_owner(const Person& owner, const std::string& fingerprint) const;
+  bool authenticate_owner(const Person* const owner, const std::string& fingerprint) const;
+  // authenticate bank
+  bool authenticate_bank(const std::string& fingerprint) const;
 };
 
 #endif  // BANK_H
